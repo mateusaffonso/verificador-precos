@@ -34,6 +34,13 @@ test('rejeita outra marca de placa de vídeo', () => {
   assert.ok(compare(gpu, { title: 'Placa de Vídeo PCYes NVIDIA GeForce RTX 4060 8GB GDDR6' }).score >= 0.8);
 });
 
+test('nome curto digitado casa com anúncio longo, mas não com outro modelo', () => {
+  const cpu = { title: 'Ryzen 7 5700X', refPrice: 2685 };
+  assert.ok(compare(cpu, { title: 'Processador AMD Ryzen 7 5700X, 3.4GHz, Cache 32MB, 8 Núcleos, Sem Cooler', price: 1219.99 }).score >= 0.8);
+  assert.ok(compare(cpu, { title: 'Processador AMD Ryzen 7 5700X3D 8-Core AM4' }).reject);
+  assert.ok(compare(cpu, { title: 'Processador AMD Ryzen 7 5800X' }).reject);
+});
+
 test('monta termo de busca enxuto', () => {
   assert.equal(buildQuery(iphone), 'apple iphone 15 128gb');
 });
