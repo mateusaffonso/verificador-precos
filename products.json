@@ -11,5 +11,18 @@
    "anyDrop": false
   },
   "createdAt": "2026-11-11T22:35:09.126Z"
+ },
+ {
+  "id": "pmwcp7hhd",
+  "url": "https://www.pichau.com.br/processador-amd-ryzen-7-5700x-8-core-16-threads-3-4ghz-4-6ghz-turbo-cache-36mb-am4-100-100000926wof?gad_source=1&gad_campaignid=17412712029&gbraid=0AAAAADvAK92e6qmlVLNN82s0aUVzzI7q8&gclid=Cj0KCQiAwdDXBhDuARIsAFdLukljYq7zt7tNbdlrwY3WI9Emo3igmQsAD_VE0P6LfjD4X6D5pztCu0saAircEALw_wcB",
+  "name": "Ryzen 7 5700X",
+  "targetPrice": 850,
+  "rules": {
+   "target": true,
+   "lowest": true,
+   "dropPct": 5,
+   "anyDrop": true
+  },
+  "createdAt": "2026-11-11T22:36:18.625Z"
  }
 ]
