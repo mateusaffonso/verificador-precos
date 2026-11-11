@@ -2,7 +2,7 @@
 // Mercado Livre, Magalu, Casas Bahia, Terabyte, Pichau e Shopee.
 import { fetchPage } from '../http.js';
 import { genericExtract, loadHTML, detectCoupon } from './generic.js';
-import { harvestCards } from './harvest.js';
+import { harvestCards, pickPrice } from './harvest.js';
 import { parseBRL, cleanText } from '../util.js';
 
 const slugify = (q) => q.trim().toLowerCase().replace(/\s+/g, '-');
@@ -88,6 +88,13 @@ export function makeStore(id) {
       if (!offer.price) {
         // tenta meta / primeiro preço visível
         offer.price = parseBRL($('[itemprop="price"]').attr('content')) || parseBRL($('meta[property="product:price:amount"]').attr('content'));
+      }
+      if (!offer.price) {
+        // Último recurso: preço exibido perto do título (h1) da página
+        let box = $('h1').first();
+        for (let i = 0; i < 5 && box.length && !/R\$\s?\d/.test(box.text()); i++) box = box.parent();
+        if (box.length) offer.price = pickPrice(box.text().slice(0, 4000));
+        if (!offer.title) offer.title = cleanText($('h1').first().text());
       }
       const seller = (c.seller && c.seller($)) || offer.seller || null;
       offer.seller = seller;
