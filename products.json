@@ -1,1 +1,3 @@
-[]
+[
+ {"id":"teste1","url":"https://www.kabum.com.br/produto/1078258","targetPrice":2400,"rules":{"target":true,"lowest":true,"dropPct":5,"anyDrop":false},"createdAt":"2026-11-11T21:45:00Z"}
+]
