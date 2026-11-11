@@ -1,1 +1,15 @@
-[]
+[
+ {
+  "id": "pmwcp5zuu",
+  "url": "https://www.kabum.com.br/produto/459144/placa-de-video-rx-7600-challenger-asrock-amd-radeon-8gb-gddr6-90-ga41zz-00uanf?gclsrc=aw.ds&&utm_id=22429436057&gad_source=1&gad_campaignid=22429436057&gbraid=0AAAAADx-HyEEdpGOLMRHrB3VHbcqteH0o&gclid=Cj0KCQiAwdDXBhDuARIsAFdLuklOn8j8rLKJLmBnu5tg88pBvC_RqH_LqcPQwL6ZbHUuGfxG3lA9tlgaAlNsEALw_wcB",
+  "name": "Rx 7600",
+  "targetPrice": 1500,
+  "rules": {
+   "target": true,
+   "lowest": true,
+   "dropPct": 5,
+   "anyDrop": false
+  },
+  "createdAt": "2026-11-11T22:35:09.126Z"
+ }
+]
