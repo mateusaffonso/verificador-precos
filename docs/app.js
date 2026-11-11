@@ -65,6 +65,9 @@
     if (!res.ok) {
       let msg = `${res.status}`;
       try { msg += ' ' + (await res.json()).message; } catch {}
+      if (res.status === 403 && /personal access token/i.test(msg)) {
+        msg = 'O token não tem permissão de escrita. Edite o token no GitHub e marque Contents e Actions como "Read and write".';
+      }
       const err = new Error(msg);
       err.status = res.status;
       throw err;
