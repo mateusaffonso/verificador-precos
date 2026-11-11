@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Verificador de Preços</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23111'/><path d='M9 21l5-6 4 4 5-8' stroke='%2337d67a' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap top-inner">
+      <div class="brand">
+        <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="currentColor"/><path d="M9 21l5-6 4 4 5-8" stroke="var(--accent)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div>
+          <h1>Verificador de Preços</h1>
+          <p id="run-status" class="muted small">Carregando…</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button id="btn-check" class="btn" title="Disparar uma verificação completa agora">Verificar agora</button>
+        <button id="btn-settings" class="btn ghost icon" title="Configurações" aria-label="Configurações">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        </button>
+      </div>
+    </div>
+    <nav class="wrap tabs" role="tablist">
+      <button class="tab active" data-tab="produtos" role="tab">Produtos</button>
+      <button class="tab" data-tab="alertas" role="tab">Alertas</button>
+      <button class="tab" data-tab="cupons" role="tab">Cupons</button>
+      <button class="tab" data-tab="lojas" role="tab">Lojas</button>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <div id="notice" class="notice" hidden></div>
+
+    <section id="tab-produtos" class="tabpanel">
+      <details id="add-box" class="card add-card">
+        <summary><span class="plus">+</span> Adicionar produto</summary>
+        <form id="add-form" autocomplete="off">
+          <div class="grid2">
+            <label>Link do produto <span class="muted">(qualquer loja)</span>
+              <input name="url" type="url" placeholder="https://www.kabum.com.br/produto/…">
+            </label>
+            <label>Nome / termo de busca <span class="muted">(opcional se tiver link)</span>
+              <input name="name" type="text" placeholder="Ex.: Apple iPhone 15 128GB Preto">
+            </label>
+          </div>
+          <div class="grid2">
+            <label>Preço-alvo
+              <div class="money"><span>R$</span><input name="targetPrice" type="text" inputmode="decimal" placeholder="2.500,00"></div>
+            </label>
+            <fieldset class="rules">
+              <legend>Avisar por e-mail quando…</legend>
+              <label class="chk"><input type="checkbox" name="r_target" checked> atingir o preço-alvo</label>
+              <label class="chk"><input type="checkbox" name="r_lowest" checked> bater o menor preço já visto</label>
+              <label class="chk"><input type="checkbox" name="r_drop" checked> cair pelo menos <input name="dropPct" type="number" min="1" max="90" value="5" class="tiny">%</label>
+              <label class="chk"><input type="checkbox" name="r_any"> qualquer queda</label>
+            </fieldset>
+          </div>
+          <p class="muted small">O app identifica o produto e procura <b>o mesmo modelo</b> em Amazon, Mercado Livre, Magalu, Casas Bahia, KaBuM!, Terabyte, Pichau, Shopee, AliExpress e no comparador Zoom.</p>
+          <div class="row-end"><button class="btn primary" type="submit">Adicionar e buscar agora</button></div>
+        </form>
+      </details>
+      <div id="products"></div>
+    </section>
+
+    <section id="tab-alertas" class="tabpanel" hidden>
+      <div id="alerts"></div>
+    </section>
+
+    <section id="tab-cupons" class="tabpanel" hidden>
+      <p class="muted small">Cupons das lojas onde há ofertas dos seus produtos (Cuponomia e Promobit). Cupons novos também vão no e-mail.</p>
+      <div id="coupons"></div>
+    </section>
+
+    <section id="tab-lojas" class="tabpanel" hidden>
+      <div id="stores"></div>
+    </section>
+  </main>
+
+  <dialog id="settings">
+    <form method="dialog" id="settings-form">
+      <h2>Configurações</h2>
+      <p class="muted small">O token fica salvo só neste navegador e é usado para salvar sua lista de produtos e disparar verificações no seu repositório.</p>
+      <div class="grid2">
+        <label>Usuário/organização do GitHub<input name="owner" required></label>
+        <label>Repositório<input name="repo" required></label>
+      </div>
+      <label>Token do GitHub (fine-grained)
+        <input name="token" type="password" placeholder="github_pat_…" autocomplete="off">
+      </label>
+      <details class="help">
+        <summary>Como criar o token</summary>
+        <ol>
+          <li>Abra <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a>.</li>
+          <li>Em <b>Repository access</b>, escolha <i>Only select repositories</i> e selecione este repositório.</li>
+          <li>Em <b>Permissions → Repository</b>: <b>Contents: Read and write</b> e <b>Actions: Read and write</b>.</li>
+          <li>Gere e cole aqui. Use expiração curta (ex.: 60 dias).</li>
+        </ol>
+      </details>
+      <p id="settings-msg" class="small"></p>
+      <div class="row-end">
+        <button class="btn ghost" value="cancel" formnovalidate>Fechar</button>
+        <button class="btn" id="btn-test" type="button">Testar</button>
+        <button class="btn primary" value="save">Salvar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="edit">
+    <form method="dialog" id="edit-form">
+      <h2>Editar produto</h2>
+      <label>Nome / termo de busca<input name="name" type="text"></label>
+      <label>Preço-alvo<div class="money"><span>R$</span><input name="targetPrice" type="text" inputmode="decimal"></div></label>
+      <fieldset class="rules">
+        <legend>Avisar por e-mail quando…</legend>
+        <label class="chk"><input type="checkbox" name="r_target"> atingir o preço-alvo</label>
+        <label class="chk"><input type="checkbox" name="r_lowest"> bater o menor preço já visto</label>
+        <label class="chk"><input type="checkbox" name="r_drop"> cair pelo menos <input name="dropPct" type="number" min="1" max="90" class="tiny">%</label>
+        <label class="chk"><input type="checkbox" name="r_any"> qualquer queda</label>
+      </fieldset>
+      <div class="row-end">
+        <button class="btn ghost" value="cancel" formnovalidate>Cancelar</button>
+        <button class="btn primary" value="save">Salvar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>
