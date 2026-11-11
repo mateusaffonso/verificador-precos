@@ -109,12 +109,6 @@ export function analyze(title, extra = {}) {
   };
 }
 
-function jaccard(a, b) {
-  let inter = 0;
-  for (const x of a) if (b.has(x)) inter++;
-  const uni = a.size + b.size - inter;
-  return uni ? inter / uni : 0;
-}
 
 /**
  * Compara a identidade do produto com um candidato.
@@ -168,17 +162,29 @@ export function compare(identity, cand) {
   if (vMissing.length) reasons.push(`sem "${vMissing.join(',')}"`);
 
   // Códigos de modelo / números
-  const codeHit = [...A.codes].filter((c) => B.codes.has(c) || B.norm.includes(c));
+  // Código precisa aparecer como palavra inteira ("5700x" não casa com "5700x3d")
+  const wordIn = (c) => new RegExp(`(^|\\s)${c.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(\\s|$)`).test(B.norm);
+  const codeHit = [...A.codes].filter((c) => B.codes.has(c) || wordIn(c));
   const codeCov = A.codes.size ? codeHit.length / A.codes.size : 0.6;
   const extraNums = [...B.codes].filter((c) => /^\d+$/.test(c) && !A.codes.has(c) && c.length >= 2);
+  // Outros códigos "da mesma família" (ex.: anúncio cita 5500x3d além de 5700x) indicam outro modelo/combo
+  const fam = (c) => (/^\d/.test(c) ? 'd' + c.match(/^\d+/)[0].length : c.replace(/\d.*$/, ''));
+  const aFams = new Set([...A.codes].filter((c) => !/^\d+$/.test(c)).map(fam));
+  const otherCodes = [...B.codes].filter((c) => !/^\d+$/.test(c) && !A.codes.has(c) && aFams.has(fam(c)) && /^\d/.test(c) === true);
   if (A.codes.size && codeHit.length === 0) return { score: 0.15, reject: true, reasons: ['modelo diferente'] };
+  const alnumMissing = [...A.codes].filter((c) => !/^\d+$/.test(c) && !codeHit.includes(c));
+  if (alnumMissing.length && otherCodes.length && !skuHit) return { score: 0.15, reject: true, reasons: [`outro modelo (${otherCodes[0]})`] };
   // Números do modelo (ex.: "15" do iPhone 15, "4060" da RTX 4060) precisam estar todos presentes
   const numMissing = [...A.codes].filter((c) => /^\d+$/.test(c) && !B.codes.has(c) && !B.toks.has(c));
   if (numMissing.length && !skuHit) return { score: 0.15, reject: true, reasons: [`modelo diferente (sem ${numMissing.join(',')})`] };
   if (codeCov < 1) reasons.push('código de modelo incompleto');
 
-  const jac = jaccard(A.toks, B.toks);
-  let score = 0.45 * codeCov + 0.25 * Math.min(1, jac * 1.8) + 0.2 * brandOk + 0.1 * (vMissing.length ? 0 : 1);
+  // Cobertura: quanto do nome procurado aparece no anúncio (anúncios longos não são penalizados)
+  let inter = 0;
+  for (const t of A.toks) if (B.toks.has(t)) inter++;
+  const coverage = A.toks.size ? inter / A.toks.size : 0;
+  let score = 0.45 * codeCov + 0.25 * coverage + 0.2 * brandOk + 0.1 * (vMissing.length ? 0 : 1);
+  if (otherCodes.length) { score -= 0.15 * Math.min(2, otherCodes.length); reasons.push(`cita outro modelo (${otherCodes.slice(0, 2).join(', ')})`); }
   score -= 0.08 * vMissing.length;
   score -= 0.06 * Math.min(4, extraNums.length);
   if (A.caps.size && [...A.caps].some((c) => !B.caps.has(c))) score -= 0.12;
@@ -189,7 +195,8 @@ export function compare(identity, cand) {
   // Sanidade de preço
   if (identity.refPrice && cand.price) {
     const r = cand.price / identity.refPrice;
-    if (r < 0.45) { score -= 0.25; reasons.push('preço muito abaixo do esperado'); }
+    // Preço baixo só é suspeito quando é muito baixo (cara de acessório/golpe) — achar barato é o objetivo
+    if (r < 0.3) { score -= 0.3; reasons.push('preço muito abaixo do esperado'); }
     else if (r > 2.2) { score -= 0.15; reasons.push('preço muito acima do esperado'); }
   }
   score = Math.max(0, Math.min(1, score));
