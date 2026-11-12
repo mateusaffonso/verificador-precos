@@ -8,7 +8,7 @@
    "target": true,
    "lowest": true,
    "dropPct": 5,
-   "anyDrop": false
+   "anyDrop": true
   },
   "createdAt": "2026-11-11T22:35:09.126Z"
  },
