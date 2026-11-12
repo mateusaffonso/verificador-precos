@@ -10,7 +10,11 @@
    "dropPct": 5,
    "anyDrop": true
   },
-  "createdAt": "2026-11-11T22:35:09.126Z"
+  "createdAt": "2026-11-11T22:35:09.126Z",
+  "approve": [],
+  "reject": [
+   "2fkjjbn2inw"
+  ]
  },
  {
   "id": "pmwcp7hhd",
